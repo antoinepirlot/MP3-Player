@@ -127,4 +127,13 @@ dependencies {
      */
     val dataStoreVersion = "1.0.0"
     implementation("androidx.datastore:datastore-preferences:$dataStoreVersion")
+
+    /**
+     * Widget
+     */
+
+    // For interop APIs with Material 3
+    val glanceVersion = "1.0.0"
+    implementation ("androidx.glance:glance-material3:$glanceVersion")
+    implementation("androidx.glance:glance-appwidget:$glanceVersion")
 }
