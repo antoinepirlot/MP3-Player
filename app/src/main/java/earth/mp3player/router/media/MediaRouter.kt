@@ -40,6 +40,7 @@ import earth.mp3player.models.Media
 import earth.mp3player.models.Music
 import earth.mp3player.services.data.DataManager
 import earth.mp3player.services.playback.PlaybackController
+import earth.mp3player.services.router.RouterManager
 import earth.mp3player.ui.utils.getMusicListFromFolder
 import earth.mp3player.ui.utils.startMusic
 import earth.mp3player.ui.views.MediaListView
@@ -53,15 +54,14 @@ import java.util.SortedMap
 @Composable
 fun MediaRouter(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
-    startDestination: String,
+    navController: NavHostController
 ) {
     val playbackController: PlaybackController = remember { PlaybackController.getInstance() }
 
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = startDestination
+        startDestination = RouterManager.startMediaDestination.value.link
     ) {
         composable(MediaDestination.FOLDERS.link) {
             // /!\ This route prevent back gesture to exit the app

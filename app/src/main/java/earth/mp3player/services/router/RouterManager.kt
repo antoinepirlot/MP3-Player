@@ -27,52 +27,41 @@ package earth.mp3player.services.router
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import earth.mp3player.router.Destination
 import earth.mp3player.router.main.MainDestination
 import earth.mp3player.router.media.MediaDestination
+import earth.mp3player.services.settings.SettingsManager
 
 /**
  * @author Antoine Pirlot on 13/03/2024
  */
 object RouterManager {
-    var mainNavController: NavHostController? = null
-        set(value) {
-            if (this.mainNavController == null && value != null) {
-                field = value
-            }
-            println()
-        }
     var startMainDestination: MutableState<MainDestination> = mutableStateOf(MainDestination.ROOT)
     var currentMainDestination: MutableState<MainDestination> = startMainDestination
 
-    var mediaNavController: NavHostController? = null
-        set(value) {
-            if (this.mediaNavController == null && value != null) {
-                field = value
-            }
+    var startMediaDestination: MutableState<MediaDestination> =
+        if (SettingsManager.foldersChecked.value) {
+            mutableStateOf(MediaDestination.FOLDERS)
+        } else if (SettingsManager.artistsChecked.value) {
+            mutableStateOf(MediaDestination.ARTISTS)
+        } else if (SettingsManager.albumsChecked.value) {
+            mutableStateOf(MediaDestination.ALBUMS)
+        } else {
+            mutableStateOf(MediaDestination.MUSICS)
         }
-    var startMediaDestination: MutableState<MediaDestination> = mutableStateOf(MediaDestination.MUSICS)
     var currentMediaDestination: MutableState<MediaDestination> = startMediaDestination
 
-    fun navigate(destination: Destination) {
+    fun navigate(navController: NavController, destination: Destination) {
         when(destination) {
             is MainDestination -> {
-                if (mainNavController == null) {
-                    return
-                }
-
-                mainNavController!!.navigate(destination.link)
                 currentMainDestination.value = destination
             }
 
             is MediaDestination -> {
-                if (mediaNavController == null) {
-                    return
-                }
-                mediaNavController!!.navigate(destination.link)
                 currentMediaDestination.value = destination
             }
         }
+        navController!!.navigate(destination.link)
     }
 }

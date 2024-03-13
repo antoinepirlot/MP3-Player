@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import earth.mp3player.models.MenuTitle
 import earth.mp3player.router.media.MediaDestination
+import earth.mp3player.services.router.RouterManager
 import earth.mp3player.services.settings.SettingsManager
 import earth.mp3player.ui.utils.getRightIconAndDescription
 
@@ -49,7 +50,6 @@ import earth.mp3player.ui.utils.getRightIconAndDescription
 @Composable
 fun MP3BottomAppBar(
     modifier: Modifier = Modifier,
-    startDestination: MutableState<String>
 ) {
     val menuTitleList: MutableList<MenuTitle> = mutableListOf(
         MenuTitle.FOLDERS,
@@ -90,23 +90,23 @@ fun MP3BottomAppBar(
                     selectedMenuTitle.value = menuTitle
                     when (menuTitle) {
                         MenuTitle.FOLDERS -> {
-                            startDestination.value = MediaDestination.FOLDERS.link
+                            RouterManager.startMediaDestination.value = MediaDestination.FOLDERS
                         }
 
                         MenuTitle.ARTISTS -> {
-                            startDestination.value = MediaDestination.ARTISTS.link
+                            RouterManager.startMediaDestination.value = MediaDestination.ARTISTS
                         }
 
                         MenuTitle.ALBUMS -> {
-                            startDestination.value = MediaDestination.ALBUMS.link
+                            RouterManager.startMediaDestination.value = MediaDestination.ALBUMS
                         }
 
                         MenuTitle.GENRES -> {
-                            startDestination.value = MediaDestination.GENRES.link
+                            RouterManager.startMediaDestination.value = MediaDestination.GENRES
                         }
 
                         MenuTitle.MUSIC -> {
-                            startDestination.value = MediaDestination.MUSICS.link
+                            RouterManager.startMediaDestination.value = MediaDestination.MUSICS
                         }
 
                     }
@@ -128,5 +128,5 @@ fun MP3BottomAppBar(
 @Preview
 @Composable
 fun MP3BottomAppBarPreview() {
-    MP3BottomAppBar(startDestination = mutableStateOf(MediaDestination.FOLDERS.link))
+    MP3BottomAppBar()
 }

@@ -92,8 +92,6 @@ class MainActivity : ComponentActivity() {
 
             PlaybackController.initInstance(context = context)
 
-            RouterManager.mainNavController = rememberNavController()
-
             MP3Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -101,35 +99,27 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val scrollBehavior =
                         TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-                    val mediaRouterStartMediaDestination =
-                        // Update the tab by default if settings has changed
-                        if (SettingsManager.foldersChecked.value) {
-                            rememberSaveable { mutableStateOf(MediaDestination.FOLDERS.link) }
-                        } else if (SettingsManager.artistsChecked.value) {
-                            rememberSaveable { mutableStateOf(MediaDestination.ARTISTS.link) }
-                        } else if (SettingsManager.albumsChecked.value) {
-                            rememberSaveable { mutableStateOf(MediaDestination.ALBUMS.link) }
-                        } else {
-                            rememberSaveable { mutableStateOf(MediaDestination.MUSICS.link) }
-                        }
-                    val mainRouterNavController = rememberNavController()
-                    val mediaRouterNavController: NavHostController = rememberNavController()
+                    val mainNavController: NavHostController = rememberNavController()
+                    val mediaNavController: NavHostController = rememberNavController()
 
                     Scaffold(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         topBar = {
-                            MP3TopAppBar(scrollBehavior = scrollBehavior)
+                            MP3TopAppBar(
+                                scrollBehavior = scrollBehavior,
+                                mainNavController = mainNavController
+                            )
                         },
                         bottomBar = {
-                            MP3BottomAppBar(startDestination = mediaRouterStartMediaDestination)
+                            MP3BottomAppBar()
                         }
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier.padding(innerPadding)
                         ) {
                             MainRouter(
-                                mediaRouterNavController = mediaRouterNavController,
-                                mediaRouterStartDestination = mediaRouterStartMediaDestination.value
+                                navController = mainNavController,
+                                mediaNavController = mediaNavController
                             )
                         }
                     }

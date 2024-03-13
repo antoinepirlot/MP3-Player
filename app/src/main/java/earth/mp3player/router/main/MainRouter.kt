@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import earth.mp3player.router.media.MediaDestination
 import earth.mp3player.router.media.MediaRouter
 import earth.mp3player.services.router.RouterManager
 import earth.mp3player.ui.views.settings.SettingsView
@@ -42,19 +41,17 @@ import earth.mp3player.ui.views.settings.SettingsView
 @Composable
 fun MainRouter(
     modifier: Modifier = Modifier,
-    mediaRouterNavController: NavHostController,
-    mediaRouterStartDestination: String,
+    navController: NavHostController,
+    mediaNavController: NavHostController
 ) {
+
     NavHost(
         modifier = modifier,
-        navController = RouterManager.mainNavController!!,
+        navController = navController,
         startDestination = RouterManager.startMainDestination.value.link
     ) {
         composable(MainDestination.ROOT.link) {
-            MediaRouter(
-                navController = mediaRouterNavController,
-                startDestination = mediaRouterStartDestination
-            )
+            MediaRouter(navController = mediaNavController)
         }
 
         composable(MainDestination.SETTINGS.link) {
