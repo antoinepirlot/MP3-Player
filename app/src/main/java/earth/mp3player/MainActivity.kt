@@ -115,10 +115,7 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         topBar = {
-                            MP3TopAppBar(
-                                scrollBehavior = scrollBehavior,
-                                navController = mainRouterNavController
-                            )
+                            MP3TopAppBar(scrollBehavior = scrollBehavior)
                         },
                         bottomBar = {
                             MP3BottomAppBar(startDestination = mediaRouterStartMediaDestination)

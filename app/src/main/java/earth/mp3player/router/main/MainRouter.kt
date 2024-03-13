@@ -57,7 +57,7 @@ fun MainRouter(
             )
         }
 
-        composable(MediaDestination.SETTINGS.link) {
+        composable(MainDestination.SETTINGS.link) {
             SettingsView()
         }
     }

@@ -25,10 +25,13 @@
 
 package earth.mp3player.router.main
 
+import earth.mp3player.router.Destination
+
 /**
  * @author Antoine Pirlot on 02-03-24
  */
 
-enum class MainDestination(val link: String) {
-    ROOT(link = "/")
+enum class MainDestination(override val link: String): Destination {
+    ROOT(link = "/"),
+    SETTINGS("/settings"),
 }

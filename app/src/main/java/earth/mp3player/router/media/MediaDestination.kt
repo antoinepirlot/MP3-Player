@@ -50,16 +50,17 @@
 
 package earth.mp3player.router.media
 
+import earth.mp3player.router.Destination
+
 /**
  * @author Antoine Pirlot on 24-01-24
  */
 
-enum class MediaDestination(val link: String) {
+enum class MediaDestination(override val link: String): Destination {
     FOLDERS("/folders"),
     ARTISTS("/artists"),
     MUSICS("/musics"),
     PLAYBACK("/playback"),
     ALBUMS("/albums"),
     GENRES("/genres"),
-    SETTINGS("/settings"),
 }

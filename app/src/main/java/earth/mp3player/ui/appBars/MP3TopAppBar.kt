@@ -42,9 +42,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import earth.mp3player.R
-import earth.mp3player.router.media.MediaDestination
+import earth.mp3player.router.main.MainDestination
+import earth.mp3player.services.router.RouterManager
 
 /**
  * @author Antoine Pirlot on 16/01/24
@@ -54,10 +54,8 @@ import earth.mp3player.router.media.MediaDestination
 @Composable
 fun MP3TopAppBar(
     modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior,
-    navController: NavHostController
+    scrollBehavior: TopAppBarScrollBehavior
 ) {
-
     CenterAlignedTopAppBar(
         modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
@@ -74,7 +72,7 @@ fun MP3TopAppBar(
         actions = {
             IconButton(
                 onClick = {
-                    navController.navigate(MediaDestination.SETTINGS.link)
+                    RouterManager.navigate(MainDestination.SETTINGS)
                 }
             ) {
                 Icon(
@@ -97,6 +95,5 @@ fun HomeTopAppBarPreview() {
     MP3TopAppBar(
         modifier = Modifier,
         scrollBehavior = scrollBehavior,
-        navController = rememberNavController()
     )
 }
