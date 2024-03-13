@@ -25,18 +25,25 @@
 
 package earth.mp3player.services.router
 
+import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import earth.mp3player.models.Album
+import earth.mp3player.models.Artist
+import earth.mp3player.models.Folder
+import earth.mp3player.models.Genre
+import earth.mp3player.models.Media
 import earth.mp3player.router.Destination
 import earth.mp3player.router.main.MainDestination
 import earth.mp3player.router.media.MediaDestination
 import earth.mp3player.services.settings.SettingsManager
+import java.lang.IllegalArgumentException
 
 /**
  * @author Antoine Pirlot on 13/03/2024
  */
-object RouterManager {
+class RouterNavController (context: Context) : NavHostController(context) {
     var startMainDestination: MutableState<MainDestination> = mutableStateOf(MainDestination.ROOT)
     var currentMainDestination: MutableState<MainDestination> = startMainDestination
 
@@ -52,7 +59,14 @@ object RouterManager {
         }
     var currentMediaDestination: MutableState<MediaDestination> = startMediaDestination
 
-    fun navigate(navController: NavController, destination: Destination) {
+    fun navigate(navController: NavHostController, destination: Destination? = null, media: Media? = null) {
+        if (destination == null && media == null) {
+            throw IllegalArgumentException("You can't call navigate with null destination and media.")
+        }
+        if (destination != null && media != null) {
+            throw IllegalArgumentException("You can't call navigate with both destination and media not null")
+        }
+
         when(destination) {
             is MainDestination -> {
                 currentMainDestination.value = destination
@@ -62,6 +76,38 @@ object RouterManager {
                 currentMediaDestination.value = destination
             }
         }
-        navController!!.navigate(destination.link)
+        navController.navigate(
+            if (media != null)
+                getDestinationOf(media)
+            else
+                destination!!.link
+        )
+    }
+
+    /**
+     * Return the destination link of media (folder, artists or music) with its id.
+     * For example if media is folder, it returns: /folders/5
+     *
+     * @param media the media to get the destination link
+     *
+     * @return the media destination link with the media's id
+     */
+    private fun getDestinationOf(media: Media?): String {
+        return when (media) {
+            is Folder -> "${MediaDestination.FOLDERS.link}/${media.id}"
+
+            is Artist -> "${MediaDestination.ARTISTS.link}/${media.title}"
+
+            is Album -> "${MediaDestination.ALBUMS.link}/${media.id}"
+
+            is Genre -> "${MediaDestination.GENRES.link}/${media.title}"
+
+            else -> MediaDestination.PLAYBACK.link
+        }
+    }
+
+    override fun popBackStack(): Boolean {
+        this.backQueue.last()
+        return super.popBackStack()
     }
 }

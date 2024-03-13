@@ -37,9 +37,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import earth.mp3player.models.MenuTitle
 import earth.mp3player.router.media.MediaDestination
-import earth.mp3player.services.router.RouterManager
+import earth.mp3player.services.router.RouterNavController
 import earth.mp3player.services.settings.SettingsManager
 import earth.mp3player.ui.utils.getRightIconAndDescription
 
@@ -50,6 +51,7 @@ import earth.mp3player.ui.utils.getRightIconAndDescription
 @Composable
 fun MP3BottomAppBar(
     modifier: Modifier = Modifier,
+    mediaNavController: RouterNavController
 ) {
     val menuTitleList: MutableList<MenuTitle> = mutableListOf(
         MenuTitle.FOLDERS,
@@ -90,23 +92,23 @@ fun MP3BottomAppBar(
                     selectedMenuTitle.value = menuTitle
                     when (menuTitle) {
                         MenuTitle.FOLDERS -> {
-                            RouterManager.startMediaDestination.value = MediaDestination.FOLDERS
+                            mediaNavController.startMediaDestination.value = MediaDestination.FOLDERS
                         }
 
                         MenuTitle.ARTISTS -> {
-                            RouterManager.startMediaDestination.value = MediaDestination.ARTISTS
+                            mediaNavController.startMediaDestination.value = MediaDestination.ARTISTS
                         }
 
                         MenuTitle.ALBUMS -> {
-                            RouterManager.startMediaDestination.value = MediaDestination.ALBUMS
+                            mediaNavController.startMediaDestination.value = MediaDestination.ALBUMS
                         }
 
                         MenuTitle.GENRES -> {
-                            RouterManager.startMediaDestination.value = MediaDestination.GENRES
+                            mediaNavController.startMediaDestination.value = MediaDestination.GENRES
                         }
 
                         MenuTitle.MUSIC -> {
-                            RouterManager.startMediaDestination.value = MediaDestination.MUSICS
+                            mediaNavController.startMediaDestination.value = MediaDestination.MUSICS
                         }
 
                     }
@@ -128,5 +130,5 @@ fun MP3BottomAppBar(
 @Preview
 @Composable
 fun MP3BottomAppBarPreview() {
-    MP3BottomAppBar()
+    MP3BottomAppBar(mediaNavController = rememberNavController() as RouterNavController)
 }

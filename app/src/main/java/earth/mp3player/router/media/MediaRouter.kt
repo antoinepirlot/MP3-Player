@@ -40,7 +40,7 @@ import earth.mp3player.models.Media
 import earth.mp3player.models.Music
 import earth.mp3player.services.data.DataManager
 import earth.mp3player.services.playback.PlaybackController
-import earth.mp3player.services.router.RouterManager
+import earth.mp3player.services.router.RouterNavController
 import earth.mp3player.ui.utils.getMusicListFromFolder
 import earth.mp3player.ui.utils.startMusic
 import earth.mp3player.ui.views.MediaListView
@@ -54,14 +54,15 @@ import java.util.SortedMap
 @Composable
 fun MediaRouter(
     modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: RouterNavController
 ) {
+    //TODO remove remember
     val playbackController: PlaybackController = remember { PlaybackController.getInstance() }
 
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = RouterManager.startMediaDestination.value.link
+        startDestination = navController.startMediaDestination.value.link
     ) {
         composable(MediaDestination.FOLDERS.link) {
             // /!\ This route prevent back gesture to exit the app
@@ -364,19 +365,22 @@ fun MediaRouter(
  * @param media the media to open
  */
 private fun openMedia(
-    navController: NavHostController,
+    navController: RouterNavController,
     media: Media? = null
 ) {
     if (media == null || media is Music) {
         startMusic(media)
     }
 
-    navController.navigate(getDestinationOf(media))
+    navController.navigate(
+        navController = navController,
+        media = media
+    )
 }
 
 
 private fun openMediaFromFolder(
-    navController: NavHostController,
+    navController: RouterNavController,
     media: Media
 ) {
     when (media) {
@@ -386,31 +390,12 @@ private fun openMediaFromFolder(
             openMedia(navController, media)
         }
 
-        is Folder -> navController.navigate(getDestinationOf(media))
+        is Folder -> navController.navigate(
+            navController = navController,
+            media = media
+        )
     }
 
-}
-
-/**
- * Return the destination link of media (folder, artists or music) with its id.
- * For example if media is folder, it returns: /folders/5
- *
- * @param media the media to get the destination link
- *
- * @return the media destination link with the media's id
- */
-fun getDestinationOf(media: Media?): String {
-    return when (media) {
-        is Folder -> "${MediaDestination.FOLDERS.link}/${media.id}"
-
-        is Artist -> "${MediaDestination.ARTISTS.link}/${media.title}"
-
-        is Album -> "${MediaDestination.ALBUMS.link}/${media.id}"
-
-        is Genre -> "${MediaDestination.GENRES.link}/${media.title}"
-
-        else -> MediaDestination.PLAYBACK.link
-    }
 }
 
 /**
@@ -418,10 +403,13 @@ fun getDestinationOf(media: Media?): String {
  *
  * @throws IllegalStateException if there's no music playing
  */
-fun openCurrentMusic(navController: NavHostController) {
+fun openCurrentMusic(navController: RouterNavController) {
     val playbackController: PlaybackController = PlaybackController.getInstance()
     val musicPlaying = playbackController.musicPlaying.value
-        ?: throw IllegalStateException("No music is currently playing, this button can be accessible")
+        ?: throw IllegalStateException("No music is currently playing, this button can't be accessible")
 
-    navController.navigate(getDestinationOf(musicPlaying))
+    navController.navigate(
+        navController = navController,
+        media = musicPlaying
+    )
 }
