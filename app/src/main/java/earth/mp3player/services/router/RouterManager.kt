@@ -25,6 +25,8 @@
 
 package earth.mp3player.services.router
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavHostController
 import earth.mp3player.router.Destination
 import earth.mp3player.router.main.MainDestination
@@ -36,21 +38,22 @@ import earth.mp3player.router.media.MediaDestination
 object RouterManager {
     var mainNavController: NavHostController? = null
         set(value) {
-            if (this.mainNavController != null && value != null) {
-                this.mainNavController = value
+            if (this.mainNavController == null && value != null) {
+                field = value
             }
+            println()
         }
-    var startMainDestination: MainDestination = MainDestination.ROOT
-    var currentMainDestination: MainDestination = startMainDestination
+    var startMainDestination: MutableState<MainDestination> = mutableStateOf(MainDestination.ROOT)
+    var currentMainDestination: MutableState<MainDestination> = startMainDestination
 
     var mediaNavController: NavHostController? = null
         set(value) {
-            if (this.mediaNavController != null && value != null) {
-                this.mediaNavController = value
+            if (this.mediaNavController == null && value != null) {
+                field = value
             }
         }
-    var startMediaDestination: MediaDestination = MediaDestination.MUSICS
-    var currentMediaDestination: MediaDestination = startMediaDestination
+    var startMediaDestination: MutableState<MediaDestination> = mutableStateOf(MediaDestination.MUSICS)
+    var currentMediaDestination: MutableState<MediaDestination> = startMediaDestination
 
     fun navigate(destination: Destination) {
         when(destination) {
@@ -60,7 +63,7 @@ object RouterManager {
                 }
 
                 mainNavController!!.navigate(destination.link)
-                currentMainDestination = destination
+                currentMainDestination.value = destination
             }
 
             is MediaDestination -> {
@@ -68,7 +71,7 @@ object RouterManager {
                     return
                 }
                 mediaNavController!!.navigate(destination.link)
-                currentMediaDestination = destination
+                currentMediaDestination.value = destination
             }
         }
     }
