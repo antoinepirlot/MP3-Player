@@ -40,14 +40,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
@@ -60,6 +64,9 @@ import earth.mp3player.services.settings.SettingsManager
 import earth.mp3player.ui.appBars.MP3BottomAppBar
 import earth.mp3player.ui.appBars.MP3TopAppBar
 import earth.mp3player.ui.theme.MP3Theme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -81,12 +88,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val context: Context = LocalContext.current
+            val isLoading: MutableState<Boolean> = remember { mutableStateOf(false) }
 
             @Suppress("NAME_SHADOWING")
             val isAudioAllowed = rememberSaveable { isAudioAllowed }
 
             if (isAudioAllowed.value) {
-                DataLoader.loadAllData(context = context)
+                isLoading.value = true
+                LaunchedEffect(key1 = null) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        DataLoader.loadAllData(context = context)
+                        isLoading.value = false
+                    }
+                }
             }
 
             PlaybackController.initInstance(context = context)
@@ -96,6 +110,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
                     val scrollBehavior =
                         TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                     val mediaRouterStartMediaDestination =
@@ -127,11 +142,15 @@ class MainActivity : ComponentActivity() {
                         Column(
                             modifier = Modifier.padding(innerPadding)
                         ) {
-                            MainRouter(
-                                navController = mainRouterNavController,
-                                mediaRouterNavController = mediaRouterNavController,
-                                mediaRouterStartDestination = mediaRouterStartMediaDestination.value
-                            )
+                            if (isLoading.value) {
+                                Text(text = stringResource(id = R.string.library_loading))
+                            } else {
+                                MainRouter(
+                                    navController = mainRouterNavController,
+                                    mediaRouterNavController = mediaRouterNavController,
+                                    mediaRouterStartDestination = mediaRouterStartMediaDestination.value
+                                )
+                            }
                         }
                     }
                 }
